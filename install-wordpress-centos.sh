@@ -73,7 +73,6 @@ tar -xzvf latest.tar.gz
 rsync -av wordpress/* /var/www/html/
 
 # Set Permissions
-chown -R www-data:www-data /var/www/html/
 chmod -R 755 /var/www/html/
 
 ## Configure WordPress Database
