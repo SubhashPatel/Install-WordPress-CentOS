@@ -10,10 +10,10 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-# prerequisite
+# Prerequisite
 yum install -y wget
 
-## check Current directory
+# Check Current directory
 pwd=$(pwd)
 
 # Ask value for mysql root password and DB name
@@ -21,7 +21,6 @@ read -p 'wordpress_db_name [wp_db]: ' wordpress_db_name
 read -p 'db_root_password [secretpasswd]: ' db_root_password
 echo
 
-# Install APache
 # Install APache
 yum install -y httpd
 systemctl start httpd
