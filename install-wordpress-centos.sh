@@ -10,18 +10,18 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+## Ask value for mysql root password and DB name
+read -p 'wordpress_db_name [wp_db]: ' wordpress_db_name
+read -p 'db_root_password [only-alphanumeric]: ' db_root_password
+echo
+
 ## Prerequisite
 yum install -y wget
 
 ## Check Current directory
 pwd=$(pwd)
 
-## Ask value for mysql root password and DB name
-read -p 'wordpress_db_name [wp_db]: ' wordpress_db_name
-read -p 'db_root_password [only-alphanumeric]: ' db_root_password
-echo
-
-## Install APache
+## Install Apache
 yum install -y httpd
 systemctl start httpd
 
