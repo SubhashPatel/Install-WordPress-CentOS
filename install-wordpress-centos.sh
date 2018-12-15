@@ -10,45 +10,45 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-# Prerequisite
+## Prerequisite
 yum install -y wget
 
-# Check Current directory
+## Check Current directory
 pwd=$(pwd)
 
-# Ask value for mysql root password and DB name
+## Ask value for mysql root password and DB name
 read -p 'wordpress_db_name [wp_db]: ' wordpress_db_name
-read -p 'db_root_password [secretpasswd]: ' db_root_password
+read -p 'db_root_password [only-alphanumeric]: ' db_root_password
 echo
 
-# Install APache
+## Install APache
 yum install -y httpd
 systemctl start httpd
 
-# Set apache autostart at system reboot
+## Set apache autostart at system reboot
 sudo systemctl enable httpd
 
-# Allow Apache via Firewall
+## Allow Apache via Firewall
 firewall-cmd --permanent --add-service=http
 systemctl restart firewalld
 
-# Install PHP
+## Install PHP
 yum install php php-mysql php-pdo php-gd php-mbstring -y
 
-# Install MySql
+## Install MySql
 # Removing previous mysql server installation
 systemctl stop mysqld.service && yum remove -y mysql-community-server && rm -rf /var/lib/mysql && rm -rf /var/log/mysqld.log && rm -rf /etc/my.cnf
 
-# Installing mysql server (community edition)'
+## Installing mysql server (community edition)'
 yum localinstall -y https://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
 yum install -y mysql-community-server
 
-# Starting mysql server (first run)'
+## Starting mysql server (first run)'
 systemctl enable mysqld.service
 systemctl start mysqld.service
 tempRootDBPass="`grep 'temporary.*root@localhost' /var/log/mysqld.log | tail -n 1 | sed 's/.*root@localhost: //'`"
 
-# Setting up new mysql server root password'
+## Setting up new mysql server root password'
 systemctl stop mysqld.service
 rm -rf /var/lib/mysql/*logfile*
 wget -O /etc/my.cnf "https://my-site.com/downloads/mysql/512MB.cnf"
@@ -71,7 +71,7 @@ wget -c http://wordpress.org/latest.tar.gz
 tar -xzvf latest.tar.gz
 rsync -av wordpress/* /var/www/html/
 
-# Set Permissions
+## Set Permissions
 chmod -R 755 /var/www/html/
 
 ## Configure WordPress Database
