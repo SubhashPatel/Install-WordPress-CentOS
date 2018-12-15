@@ -11,8 +11,9 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 ## Ask value for mysql root password and DB name
+mysqlRootPass="$(pwmake 32)"
 read -p 'wordpress_db_name [wp_db]: ' wordpress_db_name
-read -p 'db_root_password [only-alphanumeric]: ' db_root_password
+#read -p 'db_root_password [only-alphanumeric]: ' db_root_password
 echo
 
 ## Prerequisite
@@ -53,8 +54,8 @@ systemctl stop mysqld.service
 rm -rf /var/lib/mysql/*logfile*
 wget -O /etc/my.cnf "https://my-site.com/downloads/mysql/512MB.cnf"
 systemctl start mysqld.service
-mysqladmin -u root --password="$tempRootDBPass" password "$db_root_password"
-mysql -u root --password="$db_root_password" -e <<-EOSQL
+mysqladmin -u root --password="$tempRootDBPass" password "$mysqlRootPass"
+mysql -u root --password="$mysqlRootPass" -e <<-EOSQL
     DELETE FROM mysql.user WHERE User='';
     DROP DATABASE IF EXISTS test;
     DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
@@ -75,9 +76,9 @@ rsync -av wordpress/* /var/www/html/
 chmod -R 755 /var/www/html/
 
 ## Configure WordPress Database
-mysql -uroot -p$db_root_password <<QUERY_INPUT
+mysql -uroot -p$mysqlRootPass <<QUERY_INPUT
 CREATE DATABASE $wordpress_db_name;
-GRANT ALL PRIVILEGES ON $wordpress_db_name.* TO 'root'@'localhost' IDENTIFIED BY '$db_root_password';
+GRANT ALL PRIVILEGES ON $wordpress_db_name.* TO 'root'@'localhost' IDENTIFIED BY '$mysqlRootPass';
 FLUSH PRIVILEGES;
 EXIT
 QUERY_INPUT
@@ -87,7 +88,7 @@ cd /var/www/html/
 sudo mv wp-config-sample.php wp-config.php
 perl -pi -e "s/database_name_here/$wordpress_db_name/g" wp-config.php
 perl -pi -e "s/username_here/root/g" wp-config.php
-perl -pi -e "s/password_here/$db_root_password/g" wp-config.php
+perl -pi -e "s/password_here/$mysqlRootPass/g" wp-config.php
 
 ## Restart Apache and Mysql
 systemctl restart httpd
@@ -97,4 +98,4 @@ systemctl restart mysqld.service
 cd $pwd
 rm -rf latest.tar.gz wordpress
 
-echo "Installation is complete."
+echo "Installation is complete. Mysql root user passwoed id $mysqlRootPass"
