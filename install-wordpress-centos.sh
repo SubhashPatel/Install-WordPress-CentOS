@@ -98,4 +98,4 @@ systemctl restart mysqld.service
 cd $pwd
 rm -rf latest.tar.gz wordpress
 
-echo "Installation is complete. Mysql root user passwoed id $mysqlRootPass"
+echo "Installation is complete. Mysql root user passwoed is $mysqlRootPass"
